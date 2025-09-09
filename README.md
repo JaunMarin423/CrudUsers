@@ -178,157 +178,91 @@ yarn test
 - `start`: Start production server
 - `test`: Run tests
 - `lint`: Run linter
-- `format`: Format code
-- `deploy`: Deploy to AWS
-- `remove`: Remove AWS deployment
-
-## 🚀 Production Deployment
-
-1. Set up your production environment variables
-2. Build the application:
-   ```bash
-   npm run build
-   ```
-3. Deploy to AWS:
-   ```bash
-   npm run deploy -- --stage production
-   ```
-
-## 📄 License
-
-MIT
-
-## 👥 Contributing
-
-Contributions are welcome! Please read the [contributing guide](CONTRIBUTING.md) to get started.
-
-## 📧 Contact
-
-For questions or feedback, please open an issue or contact the maintainers.
-
-1. Clonar el repositorio:
-   ```bash
-   git clone https://github.com/tu-usuario/crud-users-api.git
-   cd crud-users-api
-   ```
-
-2. Instalar dependencias:
-   ```bash
-   npm install
-   # o
-   yarn install
-   ```
-
-3. Configurar variables de entorno:
-   ```bash
-   cp .env.example .env
-   ```
-   Editar el archivo `.env` con tus configuraciones.
-
-## Configuración
-
-### Variables de Entorno
-
-Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
-
-```env
-# Server Configuration
-NODE_ENV=development
-PORT=3000
-
-# API Configuration
-API_PREFIX=/api/v1
-
-# MongoDB Connection
-MONGODB_URI=mongodb://localhost:27017/crud_users
-
-# JWT Configuration
-JWT_SECRET=tu_clave_secreta_aqui
-JWT_EXPIRES_IN=90d
-JWT_COOKIE_EXPIRES_IN=90
-
-# Rate Limiting
-RATE_LIMIT_WINDOW_MS=3600000  # 1 hora en milisegundos
-RATE_LIMIT_MAX=100  # 100 peticiones por ventana
-
-# Logging
-LOG_LEVEL=info
-LOG_FORMAT=dev
-```
-
-## Uso
-
-### Desarrollo
-
-```bash
-# Ejecutar en modo desarrollo con recarga en caliente
-yarn dev
-# o
 npm run dev
-```
 
-### Producción
-
-```bash
-# Compilar TypeScript a JavaScript
-yarn build
-# o
+# Build for production / Compilar para producción
 npm run build
 
-# Iniciar servidor en producción
-yarn start
-# o
+# Start production server / Iniciar servidor en producción
 npm start
 ```
 
-## Estructura del Proyecto
+## API Endpoints / Puntos de Acceso
+
+### Authentication / Autenticación
+
+- `POST /api/v1/auth/register` - Register new user / Registrar nuevo usuario
+- `POST /api/v1/auth/login` - Login / Iniciar sesión
+- `GET /api/v1/auth/me` - Get current user profile / Obtener perfil del usuario actual
+- `POST /api/v1/auth/refresh-token` - Refresh access token / Renovar token de acceso
+- `POST /api/v1/auth/logout` - Logout / Cerrar sesión
+
+### Users / Usuarios
+
+- `GET /api/v1/users` - Get all users (admin) / Obtener todos los usuarios (admin)
+- `GET /api/v1/users/:id` - Get user by ID / Obtener usuario por ID
+- `PATCH /api/v1/users/:id` - Update user / Actualizar usuario
+- `DELETE /api/v1/users/:id` - Delete user (admin) / Eliminar usuario (admin)
+
+## Deployment / Despliegue
+
+This project is configured to deploy on [Render](https://render.com).
+
+Este proyecto está configurado para desplegarse en [Render](https://render.com).
+
+1. Click the "Deploy to Render" button at the top of this README
+2. Connect your GitHub repository
+3. Set up environment variables:
+   - `NODE_ENV=production`
+   - `MONGODB_URI=your_mongodb_uri`
+   - `JWT_SECRET=your_jwt_secret`
+   - `JWT_EXPIRES_IN=30d`
+   - `CLIENT_URL=your_frontend_url`
+
+1. Haz clic en el botón "Deploy to Render" al inicio de este README
+2. Conecta tu repositorio de GitHub
+3. Configura las variables de entorno:
+   - `NODE_ENV=production`
+   - `MONGODB_URI=tu_uri_de_mongodb`
+   - `JWT_SECRET=tu_clave_secreta_jwt`
+   - `JWT_EXPIRES_IN=30d`
+   - `CLIENT_URL=tu_url_frontend`
+
+## Project Structure / Estructura del Proyecto
 
 ```
 src/
-├── config/           # Configuraciones (base de datos, variables de entorno)
-├── controllers/      # Controladores de la aplicación
-├── interfaces/       # Interfaces TypeScript
-├── middlewares/      # Middlewares (auth, validación, etc.)
-├── models/           # Modelos de MongoDB
-├── routes/           # Rutas de la API
-├── services/         # Lógica de negocio
-├── types/            # Tipos personalizados
-├── utils/            # Utilidades
-├── app.ts            # Aplicación Express
-└── server.ts         # Punto de entrada del servidor
+├── config/           # Configurations / Configuraciones
+├── controllers/      # Route controllers / Controladores de rutas
+├── handlers/         # Route handlers / Manejadores de rutas
+├── interfaces/       # TypeScript interfaces / Interfaces TypeScript
+├── middlewares/      # Express middlewares / Middlewares de Express
+├── models/           # MongoDB models / Modelos de MongoDB
+├── routes/           # API routes / Rutas de la API
+├── services/         # Business logic / Lógica de negocio
+├── types/            # Custom types / Tipos personalizados
+└── utils/            # Utility functions / Funciones de utilidad
 ```
 
-## API Endpoints
+## Environment Variables / Variables de Entorno
 
-### Autenticación
+| Variable | Description / Descripción | Default / Valor por defecto |
+|----------|--------------------------|----------------------|
+| NODE_ENV | Application environment / Entorno de la aplicación | development |
+| PORT | Server port / Puerto del servidor | 5000 |
+| MONGODB_URI | MongoDB connection string / Cadena de conexión a MongoDB | - |
+| JWT_SECRET | Secret key for JWT / Clave secreta para JWT | - |
+| JWT_EXPIRES_IN | JWT expiration time / Tiempo de expiración del JWT | 30d |
+| CLIENT_URL | Client URL for CORS / URL del cliente para CORS | http://localhost:3000 |
 
-- `POST /api/v1/auth/register` - Registrar un nuevo usuario
-- `POST /api/v1/auth/login` - Iniciar sesión
-- `POST /api/v1/auth/logout` - Cerrar sesión
-- `GET /api/v1/auth/me` - Obtener perfil del usuario actual
+## Contributing / Contribución
 
-### Usuarios
+Contributions are welcome! Please read the [contributing guide](CONTRIBUTING.md) first.
 
-- `GET /api/v1/users` - Obtener todos los usuarios (con paginación)
-- `GET /api/v1/users/:id` - Obtener un usuario por ID
-- `PATCH /api/v1/users/:id` - Actualizar un usuario
-- `DELETE /api/v1/users/:id` - Eliminar un usuario (borrado lógico)
-- `GET /api/v1/users/me` - Obtener perfil del usuario actual
+¡Las contribuciones son bienvenidas! Por favor lee la [guía de contribución](CONTRIBUTING.md) primero.
 
-## Contribución
+## License / Licencia
 
-1. Haz un fork del proyecto
-2. Crea una rama para tu característica (`git checkout -b feature/AmazingFeature`)
-3. Haz commit de tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Haz push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
-
-## Contacto
-
-Tu Nombre - [@tuusuario](https://twitter.com/tuusuario) - email@ejemplo.com
-
-Enlace del proyecto: [https://github.com/tuusuario/crud-users-api](https://github.com/tuusuario/crud-users-api)
+Este proyecto está bajo la Licencia MIT - mira el archivo [LICENSE](LICENSE) para más detalles.
