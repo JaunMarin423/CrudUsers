@@ -206,16 +206,6 @@ COGNITO_CLIENT_ID=your_client_id
 COGNITO_CLIENT_SECRET=your_client_secret
 ```
 
-## 🧪 Testing
-
-Run tests:
-
-```bash
-npm test
-# or
-yarn test
-```
-
 ## 📦 Scripts
 
 - `dev`: Start development server
