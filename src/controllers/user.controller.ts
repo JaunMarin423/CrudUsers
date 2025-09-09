@@ -2,8 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import User from '../models/user.model.js';
 import { IUser } from '../interfaces/user.interface.js';
 import { HttpException } from '../utils/error.utils.js';
-import { body } from 'express-validator/check/index.js';
-import { validationResult } from 'express-validator/src/validation-result.js';
+import { body, validationResult, checkSchema } from 'express-validator';
 
 /**
  * @desc    Get all users
@@ -74,8 +73,8 @@ const createUserSchema = [
   body('password')
     .notEmpty()
     .withMessage('Password is required')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long'),
+    .isLength({ min: 8, max: 100 })
+    .withMessage('Password must be between 8 and 100 characters long'),
     
   body('role')
     .optional()

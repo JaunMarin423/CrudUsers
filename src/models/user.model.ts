@@ -57,7 +57,7 @@ const UserSchema = new Schema<IUserDocument, IUserModel>(
       type: String,
       required: [true, 'Please add a password'],
       minlength: [8, 'La contraseña debe tener al menos 8 caracteres'],
-      maxlength: [20, 'La contraseña no puede tener más de 20 caracteres'],
+      maxlength: [100, 'La contraseña no puede tener más de 100 caracteres'],
       select: false,
     },
     role: {

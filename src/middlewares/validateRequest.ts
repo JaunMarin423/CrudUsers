@@ -1,17 +1,44 @@
 import { Request, Response, NextFunction } from 'express';
+import { validationResult, ValidationChain, Result, ValidationError } from 'express-validator';
 
-type ValidationError = {
-  msg: string;
+type CustomValidationError = {
   param: string;
-  location?: string;
+  msg: string;
   value?: any;
 };
 
-type ValidationResult = {
+type CustomValidationResult = {
   isEmpty: () => boolean;
-  array: () => ValidationError[];
+  array: () => CustomValidationError[];
 };
 
+// Validation middleware for express-validator
+export const validateRequest = (validations: ValidationChain[]) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    await Promise.all(validations.map(validation => validation.run(req)));
+
+    const result = validationResult(req);
+    if (result.isEmpty()) {
+      return next();
+    }
+
+    const errors = result.array().map(err => {
+      // Handle both FieldValidationError and AlternativeValidationError types
+      const param = 'path' in err ? err.path : 'param' in err ? err.param : 'unknown';
+      return {
+        field: param,
+        message: err.msg
+      };
+    });
+
+    return res.status(400).json({
+      status: 'error',
+      errors
+    });
+  };
+};
+
+// Field validation functions
 export const validateName = (name: string, field: string): string | null => {
   if (!name) return `El ${field} es obligatorio`;
   if (name.length > 40) return `El ${field} no puede tener más de 40 caracteres`;
@@ -47,7 +74,8 @@ export const validateUsername = (username: string): string | null => {
 
 export const validatePassword = (password: string): string | null => {
   if (!password) return 'La contraseña es obligatoria';
-  if (password.length > 20) return 'La contraseña no puede tener más de 20 caracteres';
+  if (password.length < 8) return 'La contraseña debe tener al menos 8 caracteres';
+  if (password.length > 100) return 'La contraseña no puede tener más de 100 caracteres';
   return null;
 };
 
@@ -56,8 +84,9 @@ export const isUserUpdateRequest = (req: Request): boolean => {
   return req.method === 'PUT' && req.path.match(/^\/api\/users\/[a-f\d]{24}$/) !== null;
 };
 
-export const validateRequest = (req: Request): ValidationResult => {
-  const errors: ValidationError[] = [];
+// Custom validation function for user data
+export const validateUserData = (req: Request) => {
+  const errors: CustomValidationError[] = [];
   const { name, lastName, motherLastName, phoneNumber, email, username, password } = req.body;
   const isUpdate = isUserUpdateRequest(req);
 
@@ -127,7 +156,7 @@ export const validateRequest = (req: Request): ValidationResult => {
 // Validation for login requests
 export const validateLogin = (req: Request, res: Response, next: NextFunction): Response | void => {
   const { identifier, password } = req.body;
-  const errors: ValidationError[] = [];
+  const errors: CustomValidationError[] = [];
 
   if (!identifier) {
     errors.push({ msg: 'Se requiere un correo electrónico o nombre de usuario', param: 'identifier' });
@@ -140,7 +169,10 @@ export const validateLogin = (req: Request, res: Response, next: NextFunction): 
   if (errors.length > 0) {
     return res.status(400).json({
       success: false,
-      errors
+      errors: errors.map(err => ({
+        field: err.param,
+        message: err.msg
+      }))
     });
   }
 
@@ -154,7 +186,7 @@ export const validate = (req: Request, res: Response, next: NextFunction): Respo
   }
   
   // Use regular validation for other routes
-  const result = validateRequest(req);
+  const result = validateUserData(req);
   
   if (!result.isEmpty()) {
     return res.status(400).json({

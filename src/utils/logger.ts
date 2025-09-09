@@ -1,11 +1,5 @@
 // Core Node.js modules
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-// Get directory name in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Third-party modules
 import { format, transports, addColors, createLogger } from 'winston';

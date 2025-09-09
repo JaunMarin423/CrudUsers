@@ -1,13 +1,11 @@
 // Core Node.js modules
 import path from 'path';
-import { fileURLToPath } from 'url';
 
 // Third-party modules
 import moduleAlias from 'module-alias';
 
-// Get the current directory in an ES module compatible way
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Get the current directory
+const __dirname = path.resolve();
 
 // Register module aliases
 const aliases = {

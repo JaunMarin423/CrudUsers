@@ -1,6 +1,5 @@
 // Core Node.js modules
 import path from 'path';
-import { fileURLToPath } from 'url';
 
 // Third-party modules
 import compression from 'compression';
@@ -23,9 +22,8 @@ import userRoutes from './routes/user.routes.js';
 import logger from './utils/logger.js';
 import { validate } from './middlewares/validateRequest.js';
 
-// Get directory name in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Get current directory
+const __dirname = path.resolve();
 
 // Load environment variables
 config({ path: path.join(__dirname, '../.env') });

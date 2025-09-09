@@ -1,16 +1,8 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-// Get directory name in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Load environment variables from .env file
-// dotenv.config({ path: path.join(__dirname, '../../.env') });
-
-// Carga las variables de entorno
-dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 // Environment variables with default values
 const env = process.env.NODE_ENV || 'development';
