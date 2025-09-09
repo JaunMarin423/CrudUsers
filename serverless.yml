@@ -1,0 +1,272 @@
+service: crud-users-api
+
+# Use the serverless-webpack plugin to transpile TypeScript
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+# Configure the serverless-webpack plugin
+custom:
+  webpack:
+    webpackConfig: './webpack.config.js'
+    includeModules: true
+    packager: 'npm'
+  serverless-offline:
+    httpPort: 3000
+    lambdaPort: 3002
+    noPrependStageInUrl: true
+  dotenv:
+    path: ./.env
+    include:
+      - NODE_ENV
+      - MONGODB_URI
+      - JWT_SECRET
+      - JWT_EXPIRES_IN
+      - AWS_ACCOUNT_ID
+      - AWS_REGION
+
+# Configure the AWS provider
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${self:custom.dotenv.AWS_REGION, 'us-east-1'}
+  memorySize: 256
+  timeout: 30
+  logRetentionInDays: 14
+  versionFunctions: false
+  tracing:
+    apiGateway: true
+    lambda: true
+  environment:
+    NODE_ENV: ${self:custom.dotenv.NODE_ENV, 'production'}
+    MONGODB_URI: ${self:custom.dotenv.MONGODB_URI}
+    JWT_SECRET: ${self:custom.dotenv.JWT_SECRET}
+    JWT_EXPIRES_IN: ${self:custom.dotenv.JWT_EXPIRES_IN, '90d'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - 'logs:CreateLogGroup'
+        - 'logs:CreateLogStream'
+        - 'logs:PutLogEvents'
+      Resource: 'arn:aws:logs:*:*:*'
+    - Effect: Allow
+      Action:
+        - 'dynamodb:*'  # Adjust based on your database needs
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - 'cognito-idp:AdminInitiateAuth'
+        - 'cognito-idp:AdminCreateUser'
+        - 'cognito-idp:AdminSetUserPassword'
+        - 'cognito-idp:AdminUpdateUserAttributes'
+      Resource: '*'
+
+# Define custom domains if needed
+customDomain: ${file(./serverless.custom-domain.yml):customDomain, ''}
+
+# Define API Gateway settings
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+    GatewayResponseDefault5XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_5XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+    ApiGatewayAuthorizer:
+      Type: 'AWS::ApiGateway::Authorizer'
+      Properties:
+        Name: 'CognitoAuthorizer'
+        IdentitySource: 'method.request.header.Authorization'
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+        Type: 'COGNITO_USER_POOLS'
+        ProviderARNs:
+          - !Sub 'arn:aws:cognito-idp:${self:provider.region}:${self:custom.dotenv.AWS_ACCOUNT_ID}:userpool/${self:custom.dotenv.COGNITO_USER_POOL_ID}'
+
+# Define the package
+package:
+  individually: true
+  excludeDevDependencies: true
+  patterns:
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!node_modules/prisma/libquery_engine-debian-*'
+    - '!node_modules/prisma/libquery_engine-rhel-*'
+    - '!node_modules/prisma/libquery_engine-darwin-*'
+    - '!node_modules/@prisma/engines/**'
+
+# Define the Lambda functions
+functions:
+  auth:
+    handler: src/handlers/auth.handler
+    events:
+      - http:
+          path: /api/auth/register
+          method: post
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+      - http:
+          path: /api/auth/login
+          method: post
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+      - http:
+          path: /api/auth/logout
+          method: post
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+  users:
+    handler: src/handlers/users.handler
+    events:
+      - http:
+          path: /api/users
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+      - http:
+          path: /api/users/{id}
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+      - http:
+          path: /api/users/{id}
+          method: put
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+  me:
+    handler: src/handlers/me.handler
+    events:
+      - http:
+          path: /api/users/me
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+# Define the resources
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+    GatewayResponseDefault5XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_5XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+
+# Define the package
+package:
+  individually: true
+  excludeDevDependencies: true
+  patterns:
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!node_modules/prisma/libquery_engine-debian-*'
+    - '!node_modules/prisma/libquery_engine-rhel-*'
+    - '!node_modules/prisma/libquery_engine-darwin-*'
+    - '!node_modules/prisma/libquery_engine-windows-*'
+    - '!node_modules/prisma/libquery_engine-debian-*'
+    - '!node_modules/@prisma/engines/**'

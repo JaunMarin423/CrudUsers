@@ -1,0 +1,142 @@
+{
+  "name": "crud-users-api",
+  "version": "1.0.0",
+  "description": "API de gestión de usuarios con Node.js, TypeScript, Express y MongoDB",
+  "main": "dist/server.js",
+  "type": "module",
+  "_moduleAliases": {
+    "@": "./src",
+    "@config": "./src/config",
+    "@controllers": "./src/controllers",
+    "@interfaces": "./src/interfaces",
+    "@middlewares": "./src/middlewares",
+    "@models": "./src/models",
+    "@routes": "./src/routes",
+    "@services": "./src/services",
+    "@types": "./src/types",
+    "@utils": "./src/utils"
+  },
+  "scripts": {
+    "setup": "node setup-aliases.mjs",
+    "dev": "NODE_OPTIONS='--no-warnings --import ./register-hook.js' tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "prepare": "husky install",
+    "deploy": "npm run build && ./scripts/deploy.sh",
+    "deploy:dev": "npm run deploy -- --stage dev",
+    "deploy:staging": "npm run deploy -- --stage staging",
+    "deploy:prod": "npm run deploy -- --stage prod --force",
+    "deploy:function": "npm run build && serverless deploy function",
+    "remove:dev": "serverless remove --stage dev",
+    "remove:prod": "serverless remove --stage prod",
+    "offline": "serverless offline start"
+  },
+  "dependencies": {
+    "@types/validator": "^13.7.1",
+    "@types/winston": "^2.4.4",
+    "aws-lambda": "^1.0.7",
+    "aws-serverless-express": "^3.4.0",
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.2.0",
+    "express-mongo-sanitize": "^2.1.0",
+    "express-rate-limit": "^5.5.1",
+    "express-validator": "^6.13.0",
+    "helmet": "^4.6.0",
+    "hpp": "^0.2.3",
+    "http-status-codes": "^2.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "module-alias": "^2.2.3",
+    "mongoose": "^6.0.12",
+    "morgan": "^1.10.0",
+    "serverless-http": "^3.0.2",
+    "winston": "^3.3.3",
+    "xss-clean": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.152",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/express-rate-limit": "^5.1.3",
+    "@types/express-validator": "^2.20.33",
+    "@types/helmet": "^0.0.48",
+    "@types/hpp": "^0.2.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^24.3.1",
+    "@typescript-eslint/eslint-plugin": "^5.8.0",
+    "@typescript-eslint/parser": "^5.8.0",
+    "aws-sdk": "^2.1046.0",
+    "copy-webpack-plugin": "^10.2.0",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.7",
+    "prettier": "^2.5.1",
+    "serverless": "^2.72.4",
+    "serverless-dotenv-plugin": "^3.12.2",
+    "serverless-offline": "^8.8.1",
+    "serverless-plugin-typescript": "^2.1.5",
+    "serverless-webpack": "^5.6.0",
+    "supertest": "^6.2.2",
+    "ts-jest": "^27.1.3",
+    "ts-loader": "^9.2.6",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^1.1.8",
+    "tsconfig-paths": "^3.15.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "webpack": "^5.66.0",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,json,css,md}": [
+      "prettier --write"
+    ],
+    "*.ts": [
+      "eslint --fix"
+    ]
+  },
+  "jestSonar": {
+    "reportPath": "coverage",
+    "reportFile": "test-reporter.xml",
+    "indent": 2
+  },
+  "keywords": [
+    "node",
+    "typescript",
+    "express",
+    "mongodb",
+    "jwt",
+    "api",
+    "rest",
+    "docker",
+    "serverless"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/crud-users-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/crud-users-api/issues"
+  },
+  "homepage": "https://github.com/yourusername/crud-users-api#readme"
+}
