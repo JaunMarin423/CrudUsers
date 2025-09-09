@@ -1,10 +1,14 @@
-# User Management API (AWS Lambda)
+# User Management API
 
-A serverless RESTful API for user management built with Node.js, TypeScript, AWS Lambda, API Gateway, and MongoDB Atlas. The application follows best practices for serverless architecture and includes features like authentication, authorization, and comprehensive error handling.
+A RESTful API for user management built with Node.js, TypeScript, Express, and MongoDB Atlas. The application follows best practices and includes features like authentication, authorization, and comprehensive error handling.
+
+**Live Demo**: [https://crud-users-api-v9iv.onrender.com](https://crud-users-api-v9iv.onrender.com)
+
+> 🚀 Hosted on [Render](https://render.com) - The unified cloud to build and run all your apps and websites with free SSL, a global CDN, private networks, and auto deploys from Git.
 
 ## ✨ Features
 
-- **Serverless Architecture**: Deployed on AWS Lambda with API Gateway
+- **RESTful API**: Built with Express.js
 - **Authentication**: JWT-based authentication with refresh tokens
 - **User Management**: Complete CRUD operations for users
 - **Validation**: Request validation using express-validator
@@ -12,21 +16,18 @@ A serverless RESTful API for user management built with Node.js, TypeScript, AWS
   - CORS protection
   - Rate limiting
   - Input sanitization
-  - Secure headers
+  - Secure headers with Helmet
 - **Error Handling**: Centralized error handling with proper HTTP status codes
 - **Logging**: Structured logging with context
 - **Type Safety**: Full TypeScript support
-- **CI/CD**: Ready for continuous integration and deployment
+- **CI/CD**: Ready for continuous integration and deployment with GitHub Actions
 - **Environment-based Configuration**: Easy configuration management
 
 ## 🚀 Prerequisites
 
 - Node.js v18.x or later
 - npm v9.x or later or Yarn
-- AWS Account with appropriate permissions
-- AWS CLI configured with credentials
 - MongoDB Atlas or self-hosted MongoDB instance
-- Serverless Framework (`npm install -g serverless`)
 
 ## 🛠️ Installation
 
