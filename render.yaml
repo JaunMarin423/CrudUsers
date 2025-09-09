@@ -2,8 +2,11 @@ services:
   - type: web
     name: crud-users-api
     env: node
-    buildCommand: npm install -g tsx && npm install --legacy-peer-deps
-    startCommand: npx tsx src/server.ts
+    buildCommand: |
+      npm install -g tsx
+      npm install --legacy-peer-deps
+      npm run build
+    startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -15,6 +18,16 @@ services:
         generateValue: true
       - key: PORT
         value: "3000"
+      - key: NODE_OPTIONS
+        value: "--no-warnings --import ./register-hook.js"
+    build:
+      useYarn: false
+      # Ensure we have enough memory for the build
+      memory: 4096
+    # Health check path for Render
+    healthCheckPath: /api/health
+    # Auto-deploy from git
+    autoDeploy: true
 databases:
   - name: crud-users-db
     databaseName: crud_users

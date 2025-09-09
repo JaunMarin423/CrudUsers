@@ -85,15 +85,11 @@ app.use(
 // Compression middleware
 app.use(compression());
 
-// Health check endpoint
-app.get('/api/health', (req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'Server is running',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
-});
+// Import health routes
+import healthRoutes from './routes/health.routes.js';
+
+// Health check route
+app.use('/api', healthRoutes);
 
 // Routes
 app.use('/api/auth', authRoutes);
