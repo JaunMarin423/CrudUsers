@@ -1,0 +1,266 @@
+{
+	"info": {
+		"_postman_id": "6f893bfd-a427-41d5-91b1-895515371859",
+		"name": "LogUsers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24132050"
+	},
+	"item": [
+		{
+			"name": "1. Verificar el estado del servidor",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Registrar un nuevo usuario",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"JuanM\",\n    \"lastName\": \"MarinR\",\n    \"phoneNumber\": \"1234567891\",\n    \"email\": \"test1@example.com\",\n    \"password\": \"password123\",\n    \"passwordConfirm\": \"password123\",\n    \"role\": \"user\",\n    \"username\": \"juanusername1\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Iniciar sesión",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"identifier\": \"test1@example.com\",\n    \"password\": \"password123\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Obtener perfil del usuario actual",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YmY4ODMzMzM0YzFjOTlmYWU4ZmJiNSIsImlhdCI6MTc1NzM5MDY3MSwiZXhwIjoxNzY1MTY2NjcxfQ.3tlrdX25DmQfhZmMaihHCG62Rk2BpohrUJ44MQSVgEo"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/users/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Obtener todos los usuarios (solo administradores)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YmY4ODMzMzM0YzFjOTlmYWU4ZmJiNSIsImlhdCI6MTc1NzM5MDY3MSwiZXhwIjoxNzY1MTY2NjcxfQ.3tlrdX25DmQfhZmMaihHCG62Rk2BpohrUJ44MQSVgEo"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. Actualizar perfil de usuario",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YmY2NTliZDZjYmU3NDMxYjViNjdkNiIsInVzZXJuYW1lIjoianVhbnVzZXJuYW1lIiwiaWF0IjoxNzU3MzgzMjM4LCJleHAiOjE3NTc0Njk2Mzh9.0q-jd96Erpw6QwqZjLF0CbnajRulnisqFs7jC9Tq4r0"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"David\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users/68bf659bd6cbe7431b5b67d6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"68bf659bd6cbe7431b5b67d6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. Eliminar un usuario",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YmY2NTliZDZjYmU3NDMxYjViNjdkNiIsImlhdCI6MTc1NzM5MDQ5NiwiZXhwIjoxNzY1MTY2NDk2fQ.xKvReRWNCAMJoBJNvl0jtUj7P_haV0gxtPqLR1CGfok"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"David\",\n    \"lastName\": \"MarinR\",\n    \"phoneNumber\": \"1234567890\",\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\",\n    \"role\": \"user\",\n    \"username\": \"juanusername\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users/68bf659bd6cbe7431b5b67d6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"68bf659bd6cbe7431b5b67d6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8. Log out cerrar sesión",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YmY4ODMzMzM0YzFjOTlmYWU4ZmJiNSIsImlhdCI6MTc1NzM5MDY3MSwiZXhwIjoxNzY1MTY2NjcxfQ.3tlrdX25DmQfhZmMaihHCG62Rk2BpohrUJ44MQSVgEo"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/auth/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
