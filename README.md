@@ -48,6 +48,16 @@ A serverless RESTful API for user management built with Node.js, TypeScript, AWS
    cp .env.example .env
    ```
 
+4. Install dependencies and start the development server:
+   ```bash
+   # Install tsx globally and project dependencies
+   npm install -g tsx
+   npm install --legacy-peer-deps
+   
+   # Start the development server
+   npx tsx src/server.ts
+   ```
+
 4. Update the `.env` file with your configuration:
    - Set up MongoDB connection string
    - Configure JWT secret and expiration
