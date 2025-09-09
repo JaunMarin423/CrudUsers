@@ -1,6 +1,14 @@
-import { IUser, IUserInput } from '../interfaces/user.interface.js';
+import { IUser } from '../interfaces/user.interface.js';
 import User from '../models/user.model.js';
-import { generateToken } from '../utils/jwt.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import { config } from 'dotenv';
+
+// Cargar variables de entorno
+config();
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '90d';
 
 interface RegisterInput {
   name: string;
@@ -11,6 +19,15 @@ interface RegisterInput {
   lastName: string;
   motherLastName?: string;
 }
+
+// Función para generar token JWT
+const generateToken = (id: string): string => {
+  return jwt.sign(
+    { id },
+    JWT_SECRET,
+    { expiresIn: '90d' } as jwt.SignOptions
+  );
+};
 
 export class AuthService {
   /**
@@ -49,28 +66,36 @@ export class AuthService {
         throw error;
       }
       
-      // Check for existing user with same email, username or phone
-      const existingUser = await User.findOne({
+      // Check if user already exists
+      const existingUser = await User.findOne({ 
         $or: [
           { email: userData.email },
-          { username: userData.username },
-          { phoneNumber: userData.phoneNumber }
+          { username: userData.username }
         ]
       });
 
       if (existingUser) {
-        const error = new Error('User already exists');
-        (error as any).statusCode = 409;
-        throw error;
+        throw new Error('El correo o nombre de usuario ya está en uso');
       }
 
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(userData.password, salt);
+
       // Create user
-      const user = await User.create(userData);
-      
+      const user = await User.create({
+        ...userData,
+        password: hashedPassword
+      });
+
       // Generate token
       const token = generateToken(user._id);
 
-      return { user, token };
+      // Remove password from output
+      const userObj = user.toObject();
+      const { password, ...userWithoutPassword } = userObj;
+
+      return { user: userWithoutPassword as IUser, token };
     } catch (error) {
       console.error('Error registering user:', error);
       throw error;
@@ -90,23 +115,10 @@ export class AuthService {
         ]
       }).select('+password');
 
-      if (!user) {
-        const error = new Error('Invalid credentials');
-        (error as any).statusCode = 401;
-        throw error;
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        throw new Error('Credenciales inválidas');
       }
 
-      // Check if password matches
-      const isMatch = await user.comparePassword(password);
-      if (!isMatch) {
-        const error = new Error('Invalid credentials');
-        (error as any).statusCode = 401;
-        throw error;
-      }
-
-      // Update last login
-      user.lastLogin = new Date();
-      await user.save();
 
       // Generate token
       const token = generateToken(user._id);

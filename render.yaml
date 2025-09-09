@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: crud-users-api
+    env: node
+    buildCommand: npm install -g tsx && npm install --legacy-peer-deps
+    startCommand: npx tsx src/server.ts
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: crud-users-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: "3000"
+databases:
+  - name: crud-users-db
+    databaseName: crud_users
+    user: crud_user

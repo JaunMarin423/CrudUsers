@@ -60,6 +60,42 @@ class AuthController {
     }
   };
 
+  /**
+   * Cierra la sesión del usuario
+   */
+  logout = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // En una implementación real, podrías invalidar el token aquí
+      res.status(200).json({
+        status: 'success',
+        message: 'Sesión cerrada exitosamente',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * Obtiene el perfil del usuario autenticado
+   */
+  getMe = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user;
+      
+      if (!user) {
+        throw new BadRequestError('Usuario no autenticado');
+      }
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          user,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default new AuthController();

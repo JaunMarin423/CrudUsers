@@ -25,6 +25,7 @@ custom:
       - JWT_EXPIRES_IN
       - AWS_ACCOUNT_ID
       - AWS_REGION
+      - COGNITO_USER_POOL_ID
 
 # Configure the AWS provider
 provider:
@@ -40,10 +41,10 @@ provider:
     apiGateway: true
     lambda: true
   environment:
-    NODE_ENV: ${self:custom.dotenv.NODE_ENV, 'production'}
-    MONGODB_URI: ${self:custom.dotenv.MONGODB_URI}
-    JWT_SECRET: ${self:custom.dotenv.JWT_SECRET}
-    JWT_EXPIRES_IN: ${self:custom.dotenv.JWT_EXPIRES_IN, '90d'}
+    NODE_ENV: ${env:NODE_ENV, 'production'}
+    MONGODB_URI: ${env:MONGODB_URI}
+    JWT_SECRET: ${env:JWT_SECRET, 'MvwTnXC8VyR1CMf2gYtYxF1r2wbRh0gjxiR4EPBkDGk='}
+    JWT_EXPIRES_IN: ${env:JWT_EXPIRES_IN, '90d'}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -53,14 +54,7 @@ provider:
       Resource: 'arn:aws:logs:*:*:*'
     - Effect: Allow
       Action:
-        - 'dynamodb:*'  # Adjust based on your database needs
-      Resource: '*'
-    - Effect: Allow
-      Action:
-        - 'cognito-idp:AdminInitiateAuth'
-        - 'cognito-idp:AdminCreateUser'
-        - 'cognito-idp:AdminSetUserPassword'
-        - 'cognito-idp:AdminUpdateUserAttributes'
+        - 'dynamodb:*'  # Ajusta según tus necesidades de base de datos
       Resource: '*'
 
 # Define custom domains if needed
@@ -95,8 +89,9 @@ resources:
         RestApiId:
           Ref: 'ApiGatewayRestApi'
         Type: 'COGNITO_USER_POOLS'
-        ProviderARNs:
-          - !Sub 'arn:aws:cognito-idp:${self:provider.region}:${self:custom.dotenv.AWS_ACCOUNT_ID}:userpool/${self:custom.dotenv.COGNITO_USER_POOL_ID}'
+        # Autenticación JWT simple sin Cognito
+        type: TOKEN
+        authorizerId: { Ref: HttpApiAuthorizer }
 
 # Define the package
 package:
@@ -235,38 +230,4 @@ functions:
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
-# Define the resources
-resources:
-  Resources:
-    GatewayResponseDefault4XX:
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties:
-        ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-        ResponseType: DEFAULT_4XX
-        RestApiId:
-          Ref: 'ApiGatewayRestApi'
-    GatewayResponseDefault5XX:
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties:
-        ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-        ResponseType: DEFAULT_5XX
-        RestApiId:
-          Ref: 'ApiGatewayRestApi'
 
-# Define the package
-package:
-  individually: true
-  excludeDevDependencies: true
-  patterns:
-    - '!node_modules/.prisma/client/libquery_engine-*'
-    - '!node_modules/prisma/libquery_engine-*'
-    - '!node_modules/prisma/libquery_engine-debian-*'
-    - '!node_modules/prisma/libquery_engine-rhel-*'
-    - '!node_modules/prisma/libquery_engine-darwin-*'
-    - '!node_modules/prisma/libquery_engine-windows-*'
-    - '!node_modules/prisma/libquery_engine-debian-*'
-    - '!node_modules/@prisma/engines/**'
