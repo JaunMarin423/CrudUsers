@@ -1,122 +1,166 @@
-# User Management API
+# API de Gestión de Usuarios / User Management API
 
-A RESTful API for user management built with Node.js, TypeScript, Express, and MongoDB Atlas. The application follows best practices and includes features like authentication, authorization, and comprehensive error handling.
+API RESTful para gestión de usuarios desarrollada con Node.js, TypeScript, Express y MongoDB.
 
-**Live Demo**: [https://crud-users-api-v9iv.onrender.com](https://crud-users-api-v9iv.onrender.com)
+🔗 **URL de la API**: [https://crud-users-api-v9iv.onrender.com](https://crud-users-api-v9iv.onrender.com)  
+🔗 **API URL**: [https://crud-users-api-v9iv.onrender.com](https://crud-users-api-v9iv.onrender.com)
 
-> 🚀 Hosted on [Render](https://render.com) - The unified cloud to build and run all your apps and websites with free SSL, a global CDN, private networks, and auto deploys from Git.
+## Características Principales / Key Features
 
-## ✨ Features
+- ✅ Autenticación JWT / JWT Authentication
+- 🔄 Operaciones CRUD de usuarios / User CRUD Operations
+- 🔍 Validación de datos / Data Validation
+- 🔒 Seguridad mejorada / Enhanced Security
+- 📚 Documentación clara / Clear Documentation
+- 🚀 Desplegado en Render.com / Deployed on Render.com
 
-- **RESTful API**: Built with Express.js
-- **Authentication**: JWT-based authentication with refresh tokens
-- **User Management**: Complete CRUD operations for users
-- **Validation**: Request validation using express-validator
-- **Security**:
-  - CORS protection
-  - Rate limiting
-  - Input sanitization
-  - Secure headers with Helmet
-- **Error Handling**: Centralized error handling with proper HTTP status codes
-- **Logging**: Structured logging with context
-- **Type Safety**: Full TypeScript support
-- **CI/CD**: Ready for continuous integration and deployment with GitHub Actions
-- **Environment-based Configuration**: Easy configuration management
+## Requisitos / Requirements
 
-## 🚀 Prerequisites
+- Node.js v18 o superior / Node.js v18 or higher
+- npm o Yarn / npm or Yarn
+- MongoDB Atlas o local / MongoDB Atlas or local instance
 
-- Node.js v18.x or later
-- npm v9.x or later or Yarn
-- MongoDB Atlas or self-hosted MongoDB instance
+## Instalación / Installation
 
-## 🛠️ Installation
-
-1. Clone the repository:
+1. Clonar el repositorio / Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd crud-users-api
+   git clone https://github.com/JaunMarin423/CrudUsers.git
+   cd CrudUsers
    ```
 
-2. Install dependencies:
+2. Instalar dependencias / Install dependencies:
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
-3. Copy the example environment file and update the values:
+3. Configurar variables de entorno / Set up environment variables:
    ```bash
    cp .env.example .env
+   # Editar .env con tus valores / Edit .env with your values
    ```
 
-4. Install dependencies and start the development server:
+## Uso / Usage
+
+1. Iniciar servidor de desarrollo / Start development server:
    ```bash
-   # Install tsx globally and project dependencies
-   npm install -g tsx
-   npm install --legacy-peer-deps
-   
-   # Start the development server
-   npx tsx src/server.ts
+   npm run dev
    ```
 
-4. Update the `.env` file with your configuration:
-   - Set up MongoDB connection string
-   - Configure JWT secret and expiration
-   - Add AWS credentials and region
-   - Set up Cognito User Pool ID and Client ID
+2. La API estará disponible en / API will be available at:  
+   `http://localhost:5000`
 
-## 🚀 Deployment
+## Endpoints Principales / Main Endpoints
 
-### Local Development
+### Autenticación / Authentication
+- `POST /api/v1/auth/register` - Registrar usuario / Register user
+- `POST /api/v1/auth/login` - Iniciar sesión / Login
+- `POST /api/v1/auth/logout` - Cerrar sesión / Logout
+- `POST /api/v1/auth/refresh-token` - Refrescar token / Refresh token
 
-Start the local development server:
+### Usuarios / Users
+- `GET /api/v1/users` - Obtener todos los usuarios (admin) / Get all users (admin)
+- `GET /api/v1/users/me` - Ver mi perfil / View my profile
+- `PATCH /api/v1/users/me` - Actualizar mi perfil / Update my profile
+- `DELETE /api/v1/users/me` - Eliminar mi cuenta / Delete my account
 
-```bash
-npm run dev
-# or
-yarn dev
+## 🚀 Despliegue / Deployment
+
+Esta API está desplegada en [Render](https://render.com).  
+This API is deployed on [Render](https://render.com).
+
+## 📄 Licencia / License
+
+MIT © 2023
+
+---
+
+<details>
+<summary>🇪🇸 Documentación en Español</summary>
+
+## Documentación Completa
+
+### Autenticación
+
+#### Registrar un nuevo usuario
+```http
+POST /api/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "usuario",
+  "email": "usuario@ejemplo.com",
+  "password": "contraseña123"
+}
 ```
 
-### AWS Deployment
+#### Iniciar sesión
+```http
+POST /api/v1/auth/login
+Content-Type: application/json
 
-1. Deploy to AWS:
-   ```bash
-   npm run deploy
-   # or
-   yarn deploy
-   ```
+{
+  "email": "usuario@ejemplo.com",
+  "password": "contraseña123"
+}
+```
 
-2. Deploy to a specific stage:
-   ```bash
-   npm run deploy -- --stage staging
-   # or
-   yarn deploy --stage staging
-   ```
+### Variables de Entorno
 
-3. Deploy a single function:
-   ```bash
-   serverless deploy function -f functionName
-   ```
+Crea un archivo `.env` basado en `.env.example` con las siguientes variables:
 
-## 🌐 API Endpoints
+```
+PORT=5000
+MONGODB_URI=tu_cadena_de_conexion_mongodb
+JWT_SECRET=tu_clave_secreta_jwt
+JWT_EXPIRES_IN=30d
+NODE_ENV=development
+```
+
+</details>
+
+<details>
+<summary>🇺🇸 English Documentation</summary>
+
+## Complete Documentation
 
 ### Authentication
-- `POST /auth/register` - Register a new user
-- `POST /auth/login` - Login user
-- `POST /auth/logout` - Logout user
-- `POST /auth/refresh-token` - Refresh access token
 
-### Users
-- `GET /users` - Get all users (protected)
-- `GET /users/:id` - Get user by ID (protected)
-- `PUT /users/:id` - Update user (protected)
-- `DELETE /users/:id` - Delete user (protected)
+#### Register a new user
+```http
+POST /api/v1/auth/register
+Content-Type: application/json
 
-### Profile
-- `GET /me` - Get current user profile (protected)
-- `PUT /me` - Update current user profile (protected)
+{
+  "username": "user",
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
 
-## 🔒 Authentication
+#### Login
+```http
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+### Environment Variables
+
+Create a `.env` file based on `.env.example` with the following variables:
+
+```
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=30d
+NODE_ENV=development
+```
+
+</details>
 
 All protected endpoints require a valid JWT token in the `Authorization` header:
 
