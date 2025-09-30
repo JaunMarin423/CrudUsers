@@ -3,7 +3,7 @@ services:
     name: crud-users-api
     env: node
     buildCommand: |
-      npm ci
+      npm install --include=dev
       npx tsc -p tsconfig.build.json
     startCommand: node dist/server.js
     envVars:
