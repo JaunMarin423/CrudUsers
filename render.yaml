@@ -19,7 +19,7 @@ services:
       - key: PORT
         value: "3000"
       - key: NODE_OPTIONS
-        value: "--no-warnings --import ./register-hook.js"
+        value: "--no-warnings"
     build:
       useYarn: false
       # Ensure we have enough memory for the build
