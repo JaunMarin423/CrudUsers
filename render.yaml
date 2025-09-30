@@ -21,6 +21,8 @@ services:
         value: "--no-warnings"
       - key: NPM_CONFIG_PRODUCTION
         value: "false"
+      - key: HUSKY
+        value: "0"
     build:
       useYarn: false
       # Ensure we have enough memory for the build
