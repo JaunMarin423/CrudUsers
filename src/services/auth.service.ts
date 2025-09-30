@@ -78,14 +78,9 @@ export class AuthService {
         throw new Error('El correo o nombre de usuario ya está en uso');
       }
 
-      // Hash password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(userData.password, salt);
-
-      // Create user
+      // Create user (password will be hashed by the model pre-save hook)
       const user = await User.create({
-        ...userData,
-        password: hashedPassword
+        ...userData
       });
 
       // Generate token

@@ -58,109 +58,16 @@ API RESTful para gestión de usuarios desarrollada con Node.js, TypeScript, Expr
 - `POST /api/v1/auth/refresh-token` - Refrescar token / Refresh token
 
 ### Usuarios / Users
-- `GET /api/v1/users` - Obtener todos los usuarios (admin) / Get all users (admin)
-- `GET /api/v1/users/me` - Ver mi perfil / View my profile
-- `PATCH /api/v1/users/me` - Actualizar mi perfil / Update my profile
-- `DELETE /api/v1/users/me` - Eliminar mi cuenta / Delete my account
+- `GET /users` - Get all users (protected)
+- `GET /users/:id` - Get user by ID (protected)
+- `PUT /users/:id` - Update user (protected)
+- `DELETE /users/:id` - Delete user (protected)
 
-## 🚀 Despliegue / Deployment
+### Profile
+- `GET /me` - Get current user profile (protected)
+- `PUT /me` - Update current user profile (protected)
 
-Esta API está desplegada en [Render](https://render.com).  
-This API is deployed on [Render](https://render.com).
-
-## 📄 Licencia / License
-
-MIT © 2023
-
----
-
-<details>
-<summary>🇪🇸 Documentación en Español</summary>
-
-## Documentación Completa
-
-### Autenticación
-
-#### Registrar un nuevo usuario
-```http
-POST /api/v1/auth/register
-Content-Type: application/json
-
-{
-  "username": "usuario",
-  "email": "usuario@ejemplo.com",
-  "password": "contraseña123"
-}
-```
-
-#### Iniciar sesión
-```http
-POST /api/v1/auth/login
-Content-Type: application/json
-
-{
-  "email": "usuario@ejemplo.com",
-  "password": "contraseña123"
-}
-```
-
-### Variables de Entorno
-
-Crea un archivo `.env` basado en `.env.example` con las siguientes variables:
-
-```
-PORT=5000
-MONGODB_URI=tu_cadena_de_conexion_mongodb
-JWT_SECRET=tu_clave_secreta_jwt
-JWT_EXPIRES_IN=30d
-NODE_ENV=development
-```
-
-</details>
-
-<details>
-<summary>🇺🇸 English Documentation</summary>
-
-## Complete Documentation
-
-### Authentication
-
-#### Register a new user
-```http
-POST /api/v1/auth/register
-Content-Type: application/json
-
-{
-  "username": "user",
-  "email": "user@example.com",
-  "password": "password123"
-}
-```
-
-#### Login
-```http
-POST /api/v1/auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
-```
-
-### Environment Variables
-
-Create a `.env` file based on `.env.example` with the following variables:
-
-```
-PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRES_IN=30d
-NODE_ENV=development
-```
-
-</details>
+## 🔒 Authentication
 
 All protected endpoints require a valid JWT token in the `Authorization` header:
 

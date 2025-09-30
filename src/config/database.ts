@@ -8,49 +8,64 @@ config();
 /**
  * Establece la conexión a la base de datos MongoDB
  */
-export const connectDB = async (): Promise<void> => {
+// Maximum number of retries for database connection
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 5000; // 5 seconds
+
+export const connectDB = async (retryCount = 0): Promise<void> => {
   try {
     if (!process.env.MONGODB_URI) {
       throw new Error('MONGODB_URI is not defined in environment variables');
     }
     
     const mongoUri = process.env.MONGODB_URI;
-    console.log(
-      'MongoDB URI:',
-      mongoUri ? mongoUri.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@') : 'Not found'
-    );
-
-    logger.info('Attempting to connect to MongoDB...', {
-      uri: mongoUri ? mongoUri.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@') : 'Not found',
+    const maskedUri = mongoUri ? mongoUri.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@') : 'Not found';
+    
+    logger.info(`Attempting to connect to MongoDB (Attempt ${retryCount + 1}/${MAX_RETRIES})`, {
+      uri: maskedUri,
+      nodeEnv: process.env.NODE_ENV || 'development'
     });
 
-    console.log('Attempting to connect to MongoDB...');
-    const conn = await mongoose
-      .connect(process.env.MONGODB_URI, {
-        serverSelectionTimeoutMS: 5000, // 5 seconds timeout
-        socketTimeoutMS: 45000, // 45 seconds timeout
-      })
-      .catch((err) => {
-        console.error('MongoDB connection error:', err);
-        throw err;
-      });
+    const conn = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 10000, // 10 seconds timeout
+      socketTimeoutMS: 45000, // 45 seconds timeout
+      retryWrites: true,
+      w: 'majority',
+    });
 
-    logger.info(`MongoDB Connected: ${conn.connection.host}`, {
+    logger.info('MongoDB connected successfully', {
+      host: conn.connection.host,
       dbName: conn.connection.name,
       dbStatus: conn.connection.readyState === 1 ? 'connected' : 'disconnected',
     });
   } catch (error) {
+    // If we have retries left, wait and try again
+    if (retryCount < MAX_RETRIES - 1) {
+      const nextRetry = retryCount + 1;
+      const delay = RETRY_DELAY_MS * Math.pow(2, retryCount); // Exponential backoff
+      
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.warn(`Retrying connection in ${delay}ms... (${nextRetry + 1}/${MAX_RETRIES})`, {
+        error: errorMessage,
+        nextRetryIn: `${delay}ms`
+      });
+      
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return connectDB(nextRetry);
+    }
+    
+    // Log the final error if all retries failed
     if (error instanceof Error) {
-      logger.error('Failed to connect to MongoDB:', {
+      logger.error('Failed to connect to MongoDB after all retries:', {
         name: error.name,
         message: error.message,
         stack: error.stack,
         code: (error as { code?: string }).code,
         reason: (error as { reason?: string }).reason,
-        error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
       });
     } else {
-      logger.error('Unknown error connecting to MongoDB:', { error });
+      logger.error('Unknown error connecting to MongoDB:', { error: String(error) });
     }
     // Don't exit here, let the calling function handle the error
     throw error;

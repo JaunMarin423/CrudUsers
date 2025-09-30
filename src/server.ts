@@ -26,7 +26,17 @@ import { validate } from './middlewares/validateRequest.js';
 const __dirname = path.resolve();
 
 // Load environment variables
-config({ path: path.join(__dirname, '../.env') });
+const envPath = process.env.NODE_ENV === 'test' ? '../.env.test' : '../.env';
+config({ path: path.join(__dirname, envPath) });
+
+// Verify required environment variables
+const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0 && process.env.NODE_ENV !== 'test') {
+  console.error('Missing required environment variables:', missingVars.join(', '));
+  process.exit(1);
+}
 
 // Create Express app
 const app = express();
@@ -166,38 +176,18 @@ const startServer = async (): Promise<void> => {
         stack: error.stack,
       });
     } else {
-      logger.error('Failed to start server:', { error });
+      logger.error('Unknown error occurred during server startup');
     }
     process.exit(1);
   }
-};
+}
 
-// Start the application with better error handling
+// Start the application
 startServer().catch((error) => {
-  console.error('FATAL ERROR DURING STARTUP:');
-  console.error('Error name:', error.name);
-  console.error('Error message:', error.message);
-  console.error('Error stack:', error.stack);
-  console.error('Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
-
   logger.error('Failed to start server:', {
-    name: error.name,
-    message: error.message,
-    stack: error.stack,
-    code: (error as any).code,
-    ...(error as any)
+    name: error instanceof Error ? error.name : 'Unknown',
+    message: error instanceof Error ? error.message : String(error),
+    stack: error instanceof Error ? error.stack : undefined
   });
   process.exit(1);
-});
-
-// Handle process exit
-process.on('exit', (code) => {
-  logger.info(`Process exited with code: ${code}`);
-});
-
-// Handle warnings
-process.on('warning', (warning) => {
-  logger.warn(`ADVERTENCIA: ${warning.name}`);
-  logger.warn(`Mensaje: ${warning.message}`);
-  logger.warn(`Stack: ${warning.stack}`);
 });
