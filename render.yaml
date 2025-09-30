@@ -3,8 +3,7 @@ services:
     name: crud-users-api
     env: node
     buildCommand: |
-      npm install -g tsx
-      npm install --legacy-peer-deps
+      npm ci
       npm run build
     startCommand: node dist/server.js
     envVars:
@@ -20,6 +19,8 @@ services:
         value: "3000"
       - key: NODE_OPTIONS
         value: "--no-warnings"
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
     build:
       useYarn: false
       # Ensure we have enough memory for the build
